@@ -1,23 +1,42 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const path = require('path');
-
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('public'));
+
+const roomPasswords = {}; // { roomID: password }
+const userNames = {};     // { socket.id: username }
 
 io.on('connection', socket => {
-  socket.on('join', room => {
-    socket.join(room);
-    const otherUsers = Array.from(io.sockets.adapter.rooms.get(room) || []).filter(id => id !== socket.id);
-
-    if (otherUsers.length > 0) {
-      socket.emit('other-user', otherUsers[0]);
-      socket.to(otherUsers[0]).emit('user-joined', socket.id);
+  socket.on('join', ({ roomID, password, username }) => {
+    if (roomPasswords[roomID]) {
+      if (roomPasswords[roomID] !== password) {
+        socket.emit('wrong-password');
+        return;
+      }
+    } else {
+      roomPasswords[roomID] = password;
     }
+
+    userNames[socket.id] = username;
+    socket.join(roomID);
+
+    const usersInRoom = Array.from(io.sockets.adapter.rooms.get(roomID) || []);
+    const otherUser = usersInRoom.find(id => id !== socket.id);
+
+    if (otherUser) {
+      socket.emit('other-user', otherUser);
+      socket.to(otherUser).emit('user-joined', socket.id);
+      socket.to(otherUser).emit('user-joined-name', username);
+    }
+
+    socket.on('disconnect', () => {
+      socket.to(roomID).emit('user-left');
+      delete userNames[socket.id];
+    });
   });
 
   socket.on('offer', payload => {
@@ -33,5 +52,4 @@ io.on('connection', socket => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(3000, () => console.log('Server is running on port 3000'));

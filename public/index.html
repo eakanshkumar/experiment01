@@ -2,20 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Video Call</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Video Call</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Join a Video Call</h1>
   <div id="room-selection">
-    <input id="roomInput" placeholder="Enter Room ID" />
-    <button id="joinBtn">Join Room</button>
+    <h1>Video Call to Nishu</h1>
+    <input type="text" id="usernameInput" placeholder="Name" required />
+    <br />
+    <input type="text" id="roomInput" placeholder="Call ID" required />
+    <br />
+    <input type="password" id="passwordInput" placeholder="Call Password" required />
+    <br />
+    <button id="joinBtn">Call Hubby</button>
   </div>
 
-  <div id="video-chat" style="display:none;">
-    <video id="localVideo" autoplay muted></video>
-    <video id="remoteVideo" autoplay></video>
-    <button id="leaveBtn">End Call</button>
+  <div id="video-chat" style="display: none;">
+    <video id="remoteVideo" autoplay playsinline></video>
+    <button onclick="endCall()">End Call</button>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
