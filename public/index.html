@@ -2,25 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Secure Video Call</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Secure Video Call App</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="room-selection">
-    <h1>Video Call to Nishu</h1>
-    <input type="text" id="usernameInput" placeholder="Name" required />
-    <br />
-    <input type="text" id="roomInput" placeholder="Call ID" required />
-    <br />
-    <input type="password" id="passwordInput" placeholder="Call Password" required />
-    <br />
-    <button id="joinBtn">Call Hubby</button>
+  <div id="join-screen">
+    <h2>Join Video Call</h2>
+    <input type="text" id="username" placeholder="Your Name" />
+    <input type="text" id="room-id" placeholder="Room ID" />
+    <input type="password" id="room-password" placeholder="Password" />
+    <select id="quality">
+      <option value="144">144p</option>
+      <option value="360">360p</option>
+      <option value="480">480p</option>
+      <option value="720" selected>720p</option>
+    </select>
+    <button id="join-btn">Join</button>
+    <div id="error"></div>
   </div>
 
-  <div id="video-chat" style="display: none;">
-    <video id="remoteVideo" autoplay playsinline></video>
-    <button onclick="endCall()">End Call</button>
+  <div id="video-call" style="display: none">
+    <div id="controls">
+      <span id="timer">00:00</span>
+      <button id="end-call">End Call</button>
+      <select id="bandwidth">
+        <option value="144">144p</option>
+        <option value="360">360p</option>
+        <option value="480">480p</option>
+        <option value="720">720p</option>
+      </select>
+      <span id="data-usage">0 KB</span>
+    </div>
+    <video id="remote-video" autoplay playsinline></video>
+    <ul id="participants"></ul>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>

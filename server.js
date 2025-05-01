@@ -7,49 +7,38 @@ const io = new Server(server);
 
 app.use(express.static('public'));
 
-const roomPasswords = {}; // { roomID: password }
-const userNames = {};     // { socket.id: username }
+const rooms = new Map();
 
 io.on('connection', socket => {
   socket.on('join', ({ roomID, password, username }) => {
-    if (roomPasswords[roomID]) {
-      if (roomPasswords[roomID] !== password) {
-        socket.emit('wrong-password');
-        return;
-      }
-    } else {
-      roomPasswords[roomID] = password;
+    if (!rooms.has(roomID)) {
+      rooms.set(roomID, { password, users: new Map() });
+    }
+    const room = rooms.get(roomID);
+
+    if (room.password !== password) {
+      socket.emit('wrong-password');
+      return;
     }
 
-    userNames[socket.id] = username;
     socket.join(roomID);
+    room.users.set(socket.id, username);
 
-    const usersInRoom = Array.from(io.sockets.adapter.rooms.get(roomID) || []);
-    const otherUser = usersInRoom.find(id => id !== socket.id);
+    io.to(roomID).emit('room-users', Array.from(room.users.entries()).map(([id, name]) => ({ id, name })));
+    socket.to(roomID).emit('other-user', socket.id);
 
-    if (otherUser) {
-      socket.emit('other-user', otherUser);
-      socket.to(otherUser).emit('user-joined', socket.id);
-      socket.to(otherUser).emit('user-joined-name', username);
-    }
+    socket.on('offer', offer => socket.to(roomID).emit('offer', offer));
+    socket.on('answer', answer => socket.to(roomID).emit('answer', answer));
+    socket.on('ice-candidate', candidate => socket.to(roomID).emit('ice-candidate', candidate));
 
     socket.on('disconnect', () => {
-      socket.to(roomID).emit('user-left');
-      delete userNames[socket.id];
+      room.users.delete(socket.id);
+      io.to(roomID).emit('user-left', socket.id);
+      io.to(roomID).emit('room-users', Array.from(room.users.entries()).map(([id, name]) => ({ id, name })));
+      if (room.users.size === 0) rooms.delete(roomID);
     });
-  });
-
-  socket.on('offer', payload => {
-    io.to(payload.target).emit('offer', payload);
-  });
-
-  socket.on('answer', payload => {
-    io.to(payload.target).emit('answer', payload);
-  });
-
-  socket.on('ice-candidate', incoming => {
-    io.to(incoming.target).emit('ice-candidate', incoming.candidate);
   });
 });
 
-server.listen(3000, () => console.log('Server is running on port 3000'));
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
