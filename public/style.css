@@ -1,29 +1,50 @@
 body {
   font-family: Arial, sans-serif;
-  padding: 20px;
+  background-color: #f0f2f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
   text-align: center;
-}
-#join-screen,
-#video-call {
-  margin: auto;
+  width: 90%;
   max-width: 400px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-input, button, select {
+
+input, button {
   width: 100%;
   padding: 10px;
-  margin: 5px 0;
+  margin: 8px 0;
+  font-size: 1rem;
 }
-video {
-  width: 100%;
-  max-width: 600px;
-  border: 2px solid black;
+
+button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
 }
-#participants {
-  list-style: none;
-  padding: 0;
+
+button:hover {
+  background-color: #45a049;
 }
-#controls {
+
+#videoContainer {
+  margin-top: 1rem;
   display: flex;
-  justify-content: space-around;
-  margin-bottom: 10px;
+  justify-content: center;
+}
+
+#remoteVideo {
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  border: 2px solid #333;
+  border-radius: 8px;
 }

@@ -2,40 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Secure Video Call App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Call App</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="join-screen">
-    <h2>Join Video Call</h2>
-    <input type="text" id="username" placeholder="Your Name" />
-    <input type="text" id="room-id" placeholder="Room ID" />
-    <input type="password" id="room-password" placeholder="Password" />
-    <select id="quality">
-      <option value="144">144p</option>
-      <option value="360">360p</option>
-      <option value="480">480p</option>
-      <option value="720" selected>720p</option>
-    </select>
-    <button id="join-btn">Join</button>
-    <div id="error"></div>
-  </div>
-
-  <div id="video-call" style="display: none">
-    <div id="controls">
-      <span id="timer">00:00</span>
-      <button id="end-call">End Call</button>
-      <select id="bandwidth">
-        <option value="144">144p</option>
-        <option value="360">360p</option>
-        <option value="480">480p</option>
-        <option value="720">720p</option>
-      </select>
-      <span id="data-usage">0 KB</span>
+  <div class="container">
+    <h2>Make a Video Call</h2>
+    <input type="text" id="roomInput" placeholder="Enter Room ID" />
+    <input type="password" id="passwordInput" placeholder="Room Password" />
+    <input type="text" id="nameInput" placeholder="Your Name" />
+    <button id="joinBtn">Join Room</button>
+    <div id="videoContainer">
+      <video id="remoteVideo" autoplay playsinline></video>
     </div>
-    <video id="remote-video" autoplay playsinline></video>
-    <ul id="participants"></ul>
+    <button id="leaveBtn" style="display: none">End Call</button>
   </div>
 
   <script src="/socket.io/socket.io.js"></script>
